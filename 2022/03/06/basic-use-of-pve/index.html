@@ -1,0 +1,281 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="utf-8">
+  
+  
+  <title>使用 Proxmox VE 做本地服务器虚拟化 | Marshal 的日志</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+  <meta name="description" content="在使用 Proxmox VE (PVE)之前，办公室的服务器做虚拟化，使用的是方案是：Vagrant &#x2F; libvirt kvm provider。 优点是全部配置文件化，一个命令可以跑起来全部节点，比如跑 7 vm 节点的 es 集群或者 k8s 集群。 缺点是不好管理，全得靠命令行，另外就是没有多用户权限支持，不利于分工合作。 为了便于多人合作和管理，开始使用 Proxmox VE">
+<meta property="og:type" content="article">
+<meta property="og:title" content="使用 Proxmox VE 做本地服务器虚拟化">
+<meta property="og:url" content="https://marshal.ohtly.com/2022/03/06/basic-use-of-pve/index.html">
+<meta property="og:site_name" content="Marshal 的日志">
+<meta property="og:description" content="在使用 Proxmox VE (PVE)之前，办公室的服务器做虚拟化，使用的是方案是：Vagrant &#x2F; libvirt kvm provider。 优点是全部配置文件化，一个命令可以跑起来全部节点，比如跑 7 vm 节点的 es 集群或者 k8s 集群。 缺点是不好管理，全得靠命令行，另外就是没有多用户权限支持，不利于分工合作。 为了便于多人合作和管理，开始使用 Proxmox VE">
+<meta property="og:locale" content="zh_CN">
+<meta property="og:image" content="https://www.proxmox.com/images/proxmox/Proxmox_logo_standard_hex_400px.png">
+<meta property="article:published_time" content="2022-03-06T08:37:39.000Z">
+<meta property="article:modified_time" content="2022-03-06T10:47:41.538Z">
+<meta property="article:author" content="Marshal Wu">
+<meta property="article:tag" content="虚拟化">
+<meta property="article:tag" content="pve">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:image" content="https://www.proxmox.com/images/proxmox/Proxmox_logo_standard_hex_400px.png">
+  
+    <link rel="alternate" href="/atom.xml" title="Marshal 的日志" type="application/atom+xml">
+  
+  
+    <link rel="shortcut icon" href="/favicon.png">
+  
+  
+    
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/typeface-source-code-pro@0.0.71/index.min.css">
+
+  
+  
+<link rel="stylesheet" href="/css/style.css">
+
+  
+    
+<link rel="stylesheet" href="/fancybox/jquery.fancybox.min.css">
+
+  
+<meta name="generator" content="Hexo 6.0.0"></head>
+
+<body>
+  <div id="container">
+    <div id="wrap">
+      <header id="header">
+  <div id="banner"></div>
+  <div id="header-outer" class="outer">
+    <div id="header-title" class="inner">
+      <h1 id="logo-wrap">
+        <a href="/" id="logo">Marshal 的日志</a>
+      </h1>
+      
+        <h2 id="subtitle-wrap">
+          <a href="/" id="subtitle">给自己写的，可分享的日常记录</a>
+        </h2>
+      
+    </div>
+    <div id="header-inner" class="inner">
+      <nav id="main-nav">
+        <a id="main-nav-toggle" class="nav-icon"></a>
+        
+          <a class="main-nav-link" href="/">Home</a>
+        
+          <a class="main-nav-link" href="/archives">Archives</a>
+        
+      </nav>
+      <nav id="sub-nav">
+        
+          <a id="nav-rss-link" class="nav-icon" href="/atom.xml" title="RSS 订阅"></a>
+        
+        <a id="nav-search-btn" class="nav-icon" title="搜索"></a>
+      </nav>
+      <div id="search-form-wrap">
+        <form action="//google.com/search" method="get" accept-charset="UTF-8" class="search-form"><input type="search" name="q" class="search-form-input" placeholder="搜索"><button type="submit" class="search-form-submit">&#xF002;</button><input type="hidden" name="sitesearch" value="https://marshal.ohtly.com"></form>
+      </div>
+    </div>
+  </div>
+</header>
+
+      <div class="outer">
+        <section id="main"><article id="post-basic-use-of-pve" class="h-entry article article-type-post" itemprop="blogPost" itemscope itemtype="https://schema.org/BlogPosting">
+  <div class="article-meta">
+    <a href="/2022/03/06/basic-use-of-pve/" class="article-date">
+  <time class="dt-published" datetime="2022-03-06T08:37:39.000Z" itemprop="datePublished">2022-03-06</time>
+</a>
+    
+  <div class="article-category">
+    <a class="article-category-link" href="/categories/it-%E6%8A%80%E6%9C%AF/">it 技术</a>
+  </div>
+
+  </div>
+  <div class="article-inner">
+    
+    
+      <header class="article-header">
+        
+  
+    <h1 class="p-name article-title" itemprop="headline name">
+      使用 Proxmox VE 做本地服务器虚拟化
+    </h1>
+  
+
+      </header>
+    
+    <div class="e-content article-entry" itemprop="articleBody">
+      
+        <p><img src="https://www.proxmox.com/images/proxmox/Proxmox_logo_standard_hex_400px.png"></p>
+<p>在使用 Proxmox VE (PVE)之前，办公室的服务器做虚拟化，使用的是方案是：Vagrant &#x2F; libvirt kvm provider。</p>
+<p><strong>优点</strong>是全部配置文件化，一个命令可以跑起来全部节点，比如跑 7 vm 节点的 es 集群或者 k8s 集群。</p>
+<p><strong>缺点</strong>是不好管理，全得靠命令行，另外就是没有多用户权限支持，不利于分工合作。</p>
+<p>为了便于多人合作和管理，开始使用 Proxmox VE，并给出一个不太自动化的操作最小集（节约学习成本）。</p>
+<span id="more"></span>
+
+<p>使用 <code>qm</code> 命令，通过 ssh 或者 pve web 界面的 shell 中操作，以下是必须的操作：</p>
+<ul>
+<li>下载 ubuntu server 支持 cloud-int 的镜像</li>
+<li>创建虚拟机模板</li>
+<li>克隆虚拟机实例</li>
+<li>修改虚拟机实例磁盘大小</li>
+<li>启动虚拟机实例</li>
+<li>停止虚拟机实例</li>
+<li>删除虚拟机实例</li>
+</ul>
+<p>代码如下：</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment"># 下载镜像</span></span><br><span class="line">wget https://cloud-images.ubuntu.com/focal/current/focal-server-cloudimg-amd64.img</span><br><span class="line"></span><br><span class="line">template_id=500</span><br><span class="line">vm_number=1</span><br><span class="line"></span><br><span class="line"><span class="comment"># 创建模板</span></span><br><span class="line">qm create <span class="variable">$template_id</span> --name temp --memory 2048 --net0 virtio,bridge=vmbr0</span><br><span class="line">qm importdisk <span class="variable">$template_id</span> focal-server-cloudimg-amd64.img local-lvm</span><br><span class="line">qm <span class="built_in">set</span> <span class="variable">$template_id</span> --virtio0 local-lvm:vm-<span class="variable">$template_id</span>-disk-0</span><br><span class="line">qm <span class="built_in">set</span> <span class="variable">$template_id</span> --boot c --bootdisk virtio0</span><br><span class="line">qm <span class="built_in">set</span> <span class="variable">$template_id</span> --agent 1</span><br><span class="line">qm <span class="built_in">set</span> <span class="variable">$template_id</span> --ide2 local-lvm:cloudinit</span><br><span class="line">qm template <span class="variable">$template_id</span></span><br><span class="line"></span><br><span class="line"><span class="comment"># 克隆虚拟机</span></span><br><span class="line">qm <span class="built_in">clone</span> <span class="variable">$template_id</span> 20<span class="variable">$vm_number</span> --name p<span class="variable">$vm_number</span></span><br><span class="line"></span><br><span class="line"><span class="comment"># 修改磁盘大小</span></span><br><span class="line">qm resize 20<span class="variable">$vm_number</span> virtio0  20G </span><br><span class="line"></span><br><span class="line"><span class="comment"># 启动虚拟机</span></span><br><span class="line">qm start 20<span class="variable">$vm_number</span></span><br><span class="line"></span><br><span class="line"><span class="comment"># 停止虚拟机</span></span><br><span class="line">qm stop 20<span class="variable">$vm_number</span></span><br><span class="line"></span><br><span class="line"><span class="comment"># 删除虚拟机</span></span><br><span class="line">qm destroy 20<span class="variable">$vm_number</span></span><br></pre></td></tr></table></figure>
+
+<p>代码见：<a target="_blank" rel="noopener" href="https://gist.github.com/MarshalW/bc186c041c962655b6c0c20881f74a55">https://gist.github.com/MarshalW/bc186c041c962655b6c0c20881f74a55</a></p>
+
+      
+    </div>
+    <footer class="article-footer">
+      <a data-url="https://marshal.ohtly.com/2022/03/06/basic-use-of-pve/" data-id="cl0f146r10000vq4ygm3e7iic" data-title="使用 Proxmox VE 做本地服务器虚拟化" class="article-share-link">分享</a>
+      
+      
+      
+  <ul class="article-tag-list" itemprop="keywords"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/pve/" rel="tag">pve</a></li><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/%E8%99%9A%E6%8B%9F%E5%8C%96/" rel="tag">虚拟化</a></li></ul>
+
+    </footer>
+  </div>
+  
+    
+<nav id="article-nav">
+  
+    <a href="/2022/03/06/hexo-image-align-left/" id="article-nav-newer" class="article-nav-link-wrap">
+      <strong class="article-nav-caption">前一篇</strong>
+      <div class="article-nav-title">
+        
+          Hexo 文章图片居左的处理
+        
+      </div>
+    </a>
+  
+  
+    <a href="/2022/03/06/create-a-ts-koa-proto/" id="article-nav-older" class="article-nav-link-wrap">
+      <strong class="article-nav-caption">后一篇</strong>
+      <div class="article-nav-title">创建 koa-ts 原型项目，为新项目做技术准备</div>
+    </a>
+  
+</nav>
+
+  
+</article>
+
+
+</section>
+        
+          <aside id="sidebar">
+  
+    
+  <div class="widget-wrap">
+    <h3 class="widget-title">分类</h3>
+    <div class="widget">
+      <ul class="category-list"><li class="category-list-item"><a class="category-list-link" href="/categories/it-%E6%8A%80%E6%9C%AF/">it 技术</a></li></ul>
+    </div>
+  </div>
+
+
+  
+    
+  <div class="widget-wrap">
+    <h3 class="widget-title">标签</h3>
+    <div class="widget">
+      <ul class="tag-list" itemprop="keywords"><li class="tag-list-item"><a class="tag-list-link" href="/tags/docker/" rel="tag">docker</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/hexo/" rel="tag">hexo</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/koa/" rel="tag">koa</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/lcdp/" rel="tag">lcdp</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/node-js/" rel="tag">node.js</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/pve/" rel="tag">pve</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/typescript/" rel="tag">typescript</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/%E8%99%9A%E6%8B%9F%E5%8C%96/" rel="tag">虚拟化</a></li></ul>
+    </div>
+  </div>
+
+
+  
+    
+  <div class="widget-wrap">
+    <h3 class="widget-title">标签云</h3>
+    <div class="widget tagcloud">
+      <a href="/tags/docker/" style="font-size: 10px;">docker</a> <a href="/tags/hexo/" style="font-size: 20px;">hexo</a> <a href="/tags/koa/" style="font-size: 10px;">koa</a> <a href="/tags/lcdp/" style="font-size: 10px;">lcdp</a> <a href="/tags/node-js/" style="font-size: 10px;">node.js</a> <a href="/tags/pve/" style="font-size: 10px;">pve</a> <a href="/tags/typescript/" style="font-size: 10px;">typescript</a> <a href="/tags/%E8%99%9A%E6%8B%9F%E5%8C%96/" style="font-size: 20px;">虚拟化</a>
+    </div>
+  </div>
+
+  
+    
+  <div class="widget-wrap">
+    <h3 class="widget-title">归档</h3>
+    <div class="widget">
+      <ul class="archive-list"><li class="archive-list-item"><a class="archive-list-link" href="/archives/2022/03/">三月 2022</a></li></ul>
+    </div>
+  </div>
+
+
+  
+    
+  <div class="widget-wrap">
+    <h3 class="widget-title">最新文章</h3>
+    <div class="widget">
+      <ul>
+        
+          <li>
+            <a href="/2022/03/06/hexo-image-align-left/">Hexo 文章图片居左的处理</a>
+          </li>
+        
+          <li>
+            <a href="/2022/03/06/basic-use-of-pve/">使用 Proxmox VE 做本地服务器虚拟化</a>
+          </li>
+        
+          <li>
+            <a href="/2022/03/06/create-a-ts-koa-proto/">创建 koa-ts 原型项目，为新项目做技术准备</a>
+          </li>
+        
+          <li>
+            <a href="/2022/03/05/hello-world/">Hello World</a>
+          </li>
+        
+      </ul>
+    </div>
+  </div>
+
+  
+</aside>
+        
+      </div>
+      <footer id="footer">
+  
+  <div class="outer">
+    <div id="footer-info" class="inner">
+      
+      &copy; 2022 Marshal Wu<br>
+      Powered by <a href="https://hexo.io/" target="_blank">Hexo</a>
+    </div>
+  </div>
+</footer>
+
+    </div>
+    <nav id="mobile-nav">
+  
+    <a href="/" class="mobile-nav-link">Home</a>
+  
+    <a href="/archives" class="mobile-nav-link">Archives</a>
+  
+</nav>
+    
+
+
+<script src="/js/jquery-3.4.1.min.js"></script>
+
+
+
+  
+<script src="/fancybox/jquery.fancybox.min.js"></script>
+
+
+
+
+<script src="/js/script.js"></script>
+
+
+
+
+
+  </div>
+</body>
+</html>
