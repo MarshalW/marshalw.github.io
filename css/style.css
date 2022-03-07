@@ -604,6 +604,7 @@ a.article-title:hover {
   height: auto;
   display: block;
   margin: auto;
+  margin-left: 0px;
 }
 .article-entry iframe {
   border: none;
