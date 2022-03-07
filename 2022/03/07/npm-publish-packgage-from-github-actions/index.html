@@ -1,0 +1,279 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="utf-8">
+  
+  
+  <title>通过 GitHub Actions 向 npm 发布包的步骤 | Marshal 的日志</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+  <meta name="description" content="向 npm 发布 package 的最简单的方式是：  免费注册 npm 账号，并通过命令登录：npm login 在当前项目目录下执行 npm publish .  这样不够自动化，每次需要手动执行命令。 可以借助 GitHub 的 Actions，当 push 代码后触发指定事件，会执行 build 过程并将 package 发布到 npm。 基本过程是：">
+<meta property="og:type" content="article">
+<meta property="og:title" content="通过 GitHub Actions 向 npm 发布包的步骤">
+<meta property="og:url" content="https://marshal.ohtly.com/2022/03/07/npm-publish-packgage-from-github-actions/index.html">
+<meta property="og:site_name" content="Marshal 的日志">
+<meta property="og:description" content="向 npm 发布 package 的最简单的方式是：  免费注册 npm 账号，并通过命令登录：npm login 在当前项目目录下执行 npm publish .  这样不够自动化，每次需要手动执行命令。 可以借助 GitHub 的 Actions，当 push 代码后触发指定事件，会执行 build 过程并将 package 发布到 npm。 基本过程是：">
+<meta property="og:locale" content="zh_CN">
+<meta property="article:published_time" content="2022-03-07T07:06:10.000Z">
+<meta property="article:modified_time" content="2022-03-07T07:50:01.847Z">
+<meta property="article:author" content="Marshal Wu">
+<meta property="article:tag" content="node.js">
+<meta property="article:tag" content="p2022a">
+<meta property="article:tag" content="github">
+<meta property="article:tag" content="npm">
+<meta name="twitter:card" content="summary">
+  
+    <link rel="alternate" href="/atom.xml" title="Marshal 的日志" type="application/atom+xml">
+  
+  
+    <link rel="shortcut icon" href="/favicon.png">
+  
+  
+    
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/typeface-source-code-pro@0.0.71/index.min.css">
+
+  
+  
+<link rel="stylesheet" href="/css/style.css">
+
+  
+    
+<link rel="stylesheet" href="/fancybox/jquery.fancybox.min.css">
+
+  
+<meta name="generator" content="Hexo 6.0.0"></head>
+
+<body>
+  <div id="container">
+    <div id="wrap">
+      <header id="header">
+  <div id="banner"></div>
+  <div id="header-outer" class="outer">
+    <div id="header-title" class="inner">
+      <h1 id="logo-wrap">
+        <a href="/" id="logo">Marshal 的日志</a>
+      </h1>
+      
+        <h2 id="subtitle-wrap">
+          <a href="/" id="subtitle">给自己写的，可分享的日常记录</a>
+        </h2>
+      
+    </div>
+    <div id="header-inner" class="inner">
+      <nav id="main-nav">
+        <a id="main-nav-toggle" class="nav-icon"></a>
+        
+          <a class="main-nav-link" href="/">Home</a>
+        
+          <a class="main-nav-link" href="/archives">Archives</a>
+        
+      </nav>
+      <nav id="sub-nav">
+        
+          <a id="nav-rss-link" class="nav-icon" href="/atom.xml" title="RSS 订阅"></a>
+        
+        <a id="nav-search-btn" class="nav-icon" title="搜索"></a>
+      </nav>
+      <div id="search-form-wrap">
+        <form action="//google.com/search" method="get" accept-charset="UTF-8" class="search-form"><input type="search" name="q" class="search-form-input" placeholder="搜索"><button type="submit" class="search-form-submit">&#xF002;</button><input type="hidden" name="sitesearch" value="https://marshal.ohtly.com"></form>
+      </div>
+    </div>
+  </div>
+</header>
+
+      <div class="outer">
+        <section id="main"><article id="post-npm-publish-packgage-from-github-actions" class="h-entry article article-type-post" itemprop="blogPost" itemscope itemtype="https://schema.org/BlogPosting">
+  <div class="article-meta">
+    <a href="/2022/03/07/npm-publish-packgage-from-github-actions/" class="article-date">
+  <time class="dt-published" datetime="2022-03-07T07:06:10.000Z" itemprop="datePublished">2022-03-07</time>
+</a>
+    
+  </div>
+  <div class="article-inner">
+    
+    
+      <header class="article-header">
+        
+  
+    <h1 class="p-name article-title" itemprop="headline name">
+      通过 GitHub Actions 向 npm 发布包的步骤
+    </h1>
+  
+
+      </header>
+    
+    <div class="e-content article-entry" itemprop="articleBody">
+      
+        <p>向 <a target="_blank" rel="noopener" href="https://www.npmjs.com/">npm</a> 发布 package 的最简单的方式是：</p>
+<ul>
+<li>免费注册 npm 账号，并通过命令登录：<code>npm login</code></li>
+<li>在当前项目目录下执行 <code>npm publish .</code></li>
+</ul>
+<p>这样不够自动化，每次需要手动执行命令。</p>
+<p>可以借助 GitHub 的 Actions，当 push 代码后触发指定事件，会执行 build 过程并将 package 发布到 npm。</p>
+<p>基本过程是：</p>
+<span id="more"></span>
+
+<ul>
+<li>web 页面登录 <a target="_blank" rel="noopener" href="https://www.npmjs.com/">npm</a></li>
+<li>到 Account 看下是否设置了 Two factor authentication，默认是没有设置的</li>
+<li>如果设置了 two factor authentication，那么需要在这个 package 的 settings 中<ul>
+<li>设置 publishing access 为 require two-factor authentication tokens (不是很确定)</li>
+<li>默认为 two-factor authentication is not required</li>
+</ul>
+</li>
+<li>在 Access Tokens 中，创建一个 token，选择 Automation</li>
+<li>在 github repository 进入 Settings -&gt; Secrets -&gt; Actions, New repository secret, 将上一步的 token 复制进去，name 输入 <code>NPM_TOKEN</code></li>
+<li>创建一个 workflows 文件，.&#x2F;.github&#x2F;workflows&#x2F;npm-publish.yml，见后</li>
+<li>修改代码中 package.json 中的 version，比如 <code>1.3.9</code>，git push 代码到 github</li>
+<li><code>git tags v1.3.9</code> 然后 <code>git push --tags</code>，将 tag push 到 github，这将触发 ci 和发布包的自动处理</li>
+</ul>
+<p>代码：</p>
+<figure class="highlight yml"><figcaption><span>./.github/workflows/npm-publish.yml</span></figcaption><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br></pre></td><td class="code"><pre><span class="line"><span class="attr">name:</span> <span class="string">Node.js</span> <span class="string">Package</span></span><br><span class="line"></span><br><span class="line"><span class="attr">on:</span></span><br><span class="line">  <span class="attr">push:</span></span><br><span class="line">    <span class="attr">tags:</span></span><br><span class="line">      <span class="bullet">-</span> <span class="string">&quot;v[0-9]+.[0-9]+.[0-9]+*&quot;</span></span><br><span class="line"></span><br><span class="line"><span class="attr">jobs:</span></span><br><span class="line">  <span class="attr">build:</span></span><br><span class="line">    <span class="attr">runs-on:</span> <span class="string">ubuntu-latest</span></span><br><span class="line">    <span class="attr">steps:</span></span><br><span class="line">      <span class="bullet">-</span> <span class="attr">uses:</span> <span class="string">actions/checkout@v2</span></span><br><span class="line">      <span class="bullet">-</span> <span class="attr">uses:</span> <span class="string">actions/setup-node@v2</span></span><br><span class="line">        <span class="attr">with:</span></span><br><span class="line">          <span class="attr">node-version:</span> <span class="number">16</span></span><br><span class="line">      <span class="bullet">-</span> <span class="attr">run:</span> <span class="string">npm</span> <span class="string">ci</span></span><br><span class="line">      <span class="bullet">-</span> <span class="attr">run:</span> <span class="string">npm</span> <span class="string">test</span></span><br><span class="line"></span><br><span class="line">  <span class="attr">publish-npm:</span></span><br><span class="line">    <span class="attr">needs:</span> <span class="string">build</span></span><br><span class="line">    <span class="attr">runs-on:</span> <span class="string">ubuntu-latest</span></span><br><span class="line">    <span class="attr">steps:</span></span><br><span class="line">      <span class="bullet">-</span> <span class="attr">uses:</span> <span class="string">actions/checkout@v2</span></span><br><span class="line">      <span class="bullet">-</span> <span class="attr">uses:</span> <span class="string">actions/setup-node@v2</span></span><br><span class="line">        <span class="attr">with:</span></span><br><span class="line">          <span class="attr">node-version:</span> <span class="number">16</span></span><br><span class="line">          <span class="attr">registry-url:</span> <span class="string">https://registry.npmjs.org/</span></span><br><span class="line">      <span class="bullet">-</span> <span class="attr">run:</span> <span class="string">npm</span> <span class="string">ci</span></span><br><span class="line">      <span class="bullet">-</span> <span class="attr">run:</span> <span class="string">npm</span> <span class="string">publish</span></span><br><span class="line">        <span class="attr">env:</span></span><br><span class="line">          <span class="attr">NODE_AUTH_TOKEN:</span> <span class="string">$&#123;&#123;secrets.NPM_TOKEN&#125;&#125;</span></span><br></pre></td></tr></table></figure>
+
+<p>示例项目：<a target="_blank" rel="noopener" href="https://github.com/MarshalW/max-tcp">https://github.com/MarshalW/max-tcp</a></p>
+
+      
+    </div>
+    <footer class="article-footer">
+      <a data-url="https://marshal.ohtly.com/2022/03/07/npm-publish-packgage-from-github-actions/" data-id="cl0geljf70000ocf3f0o24vbv" data-title="通过 GitHub Actions 向 npm 发布包的步骤" class="article-share-link">分享</a>
+      
+      
+      
+  <ul class="article-tag-list" itemprop="keywords"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/github/" rel="tag">github</a></li><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/node-js/" rel="tag">node.js</a></li><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/npm/" rel="tag">npm</a></li><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/p2022a/" rel="tag">p2022a</a></li></ul>
+
+    </footer>
+  </div>
+  
+    
+<nav id="article-nav">
+  
+  
+    <a href="/2022/03/06/hexo-image-align-left/" id="article-nav-older" class="article-nav-link-wrap">
+      <strong class="article-nav-caption">后一篇</strong>
+      <div class="article-nav-title">Hexo 文章图片居左的处理</div>
+    </a>
+  
+</nav>
+
+  
+</article>
+
+
+</section>
+        
+          <aside id="sidebar">
+  
+    
+  <div class="widget-wrap">
+    <h3 class="widget-title">分类</h3>
+    <div class="widget">
+      <ul class="category-list"><li class="category-list-item"><a class="category-list-link" href="/categories/it-%E6%8A%80%E6%9C%AF/">it 技术</a></li></ul>
+    </div>
+  </div>
+
+
+  
+    
+  <div class="widget-wrap">
+    <h3 class="widget-title">标签</h3>
+    <div class="widget">
+      <ul class="tag-list" itemprop="keywords"><li class="tag-list-item"><a class="tag-list-link" href="/tags/docker/" rel="tag">docker</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/github/" rel="tag">github</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/hexo/" rel="tag">hexo</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/koa/" rel="tag">koa</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/lcdp/" rel="tag">lcdp</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/node-js/" rel="tag">node.js</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/npm/" rel="tag">npm</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/p2022a/" rel="tag">p2022a</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/pve/" rel="tag">pve</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/typescript/" rel="tag">typescript</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/%E8%99%9A%E6%8B%9F%E5%8C%96/" rel="tag">虚拟化</a></li></ul>
+    </div>
+  </div>
+
+
+  
+    
+  <div class="widget-wrap">
+    <h3 class="widget-title">标签云</h3>
+    <div class="widget tagcloud">
+      <a href="/tags/docker/" style="font-size: 10px;">docker</a> <a href="/tags/github/" style="font-size: 10px;">github</a> <a href="/tags/hexo/" style="font-size: 20px;">hexo</a> <a href="/tags/koa/" style="font-size: 10px;">koa</a> <a href="/tags/lcdp/" style="font-size: 10px;">lcdp</a> <a href="/tags/node-js/" style="font-size: 20px;">node.js</a> <a href="/tags/npm/" style="font-size: 10px;">npm</a> <a href="/tags/p2022a/" style="font-size: 20px;">p2022a</a> <a href="/tags/pve/" style="font-size: 10px;">pve</a> <a href="/tags/typescript/" style="font-size: 10px;">typescript</a> <a href="/tags/%E8%99%9A%E6%8B%9F%E5%8C%96/" style="font-size: 20px;">虚拟化</a>
+    </div>
+  </div>
+
+  
+    
+  <div class="widget-wrap">
+    <h3 class="widget-title">归档</h3>
+    <div class="widget">
+      <ul class="archive-list"><li class="archive-list-item"><a class="archive-list-link" href="/archives/2022/03/">三月 2022</a></li></ul>
+    </div>
+  </div>
+
+
+  
+    
+  <div class="widget-wrap">
+    <h3 class="widget-title">最新文章</h3>
+    <div class="widget">
+      <ul>
+        
+          <li>
+            <a href="/2022/03/07/npm-publish-packgage-from-github-actions/">通过 GitHub Actions 向 npm 发布包的步骤</a>
+          </li>
+        
+          <li>
+            <a href="/2022/03/06/hexo-image-align-left/">Hexo 文章图片居左的处理</a>
+          </li>
+        
+          <li>
+            <a href="/2022/03/06/basic-use-of-pve/">使用 Proxmox VE 做本地服务器虚拟化</a>
+          </li>
+        
+          <li>
+            <a href="/2022/03/06/create-a-ts-koa-proto/">创建 koa-ts 原型项目，为新项目做技术准备</a>
+          </li>
+        
+          <li>
+            <a href="/2022/03/05/hello-world/">Hello World</a>
+          </li>
+        
+      </ul>
+    </div>
+  </div>
+
+  
+</aside>
+        
+      </div>
+      <footer id="footer">
+  
+  <div class="outer">
+    <div id="footer-info" class="inner">
+      
+      &copy; 2022 Marshal Wu<br>
+      Powered by <a href="https://hexo.io/" target="_blank">Hexo</a>
+    </div>
+  </div>
+</footer>
+
+    </div>
+    <nav id="mobile-nav">
+  
+    <a href="/" class="mobile-nav-link">Home</a>
+  
+    <a href="/archives" class="mobile-nav-link">Archives</a>
+  
+</nav>
+    
+
+
+<script src="/js/jquery-3.4.1.min.js"></script>
+
+
+
+  
+<script src="/fancybox/jquery.fancybox.min.js"></script>
+
+
+
+
+<script src="/js/script.js"></script>
+
+
+
+
+
+  </div>
+</body>
+</html>
