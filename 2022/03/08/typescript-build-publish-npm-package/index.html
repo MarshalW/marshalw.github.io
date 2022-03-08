@@ -4,14 +4,22 @@
   <meta charset="utf-8">
   
   
-  <title>标签: hexo | Marshal 的日志</title>
+  <title>Typescript 构建并发布 npm 包 | Marshal 的日志</title>
   <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
-  <meta property="og:type" content="website">
-<meta property="og:title" content="Marshal 的日志">
-<meta property="og:url" content="https://marshal.ohtly.com/tags/hexo/index.html">
+  <meta name="description" content="typescript 项目怎样编译打包发布到 npm, 并且能够让其他项目通过 javascript 和 typescript 使用。 为此写了两个测试项目：  MarshalW&#x2F;fake-ts-service ，发布到 npm 的包 MarshalW&#x2F;fake-ts-service-client，使用 face-ts-service 的 js&#x2F;ts 程序  实现 M">
+<meta property="og:type" content="article">
+<meta property="og:title" content="Typescript 构建并发布 npm 包">
+<meta property="og:url" content="https://marshal.ohtly.com/2022/03/08/typescript-build-publish-npm-package/index.html">
 <meta property="og:site_name" content="Marshal 的日志">
+<meta property="og:description" content="typescript 项目怎样编译打包发布到 npm, 并且能够让其他项目通过 javascript 和 typescript 使用。 为此写了两个测试项目：  MarshalW&#x2F;fake-ts-service ，发布到 npm 的包 MarshalW&#x2F;fake-ts-service-client，使用 face-ts-service 的 js&#x2F;ts 程序  实现 M">
 <meta property="og:locale" content="zh_CN">
+<meta property="article:published_time" content="2022-03-08T07:17:44.000Z">
+<meta property="article:modified_time" content="2022-03-08T07:56:38.886Z">
 <meta property="article:author" content="Marshal Wu">
+<meta property="article:tag" content="typescript">
+<meta property="article:tag" content="node.js">
+<meta property="article:tag" content="p2022a">
+<meta property="article:tag" content="npm">
 <meta name="twitter:card" content="summary">
   
     <link rel="alternate" href="/atom.xml" title="Marshal 的日志" type="application/atom+xml">
@@ -73,58 +81,125 @@
 </header>
 
       <div class="outer">
-        <section id="main">
-  
-  
-    
-    
-      
-      
-      <section class="archives-wrap">
-        <div class="archive-year-wrap">
-          <a href="/archives/2022" class="archive-year">2022</a>
-        </div>
-        <div class="archives">
-    
-    <article class="archive-article archive-type-post">
-  <div class="archive-article-inner">
-    <header class="archive-article-header">
-      <a href="/2022/03/06/hexo-image-align-left/" class="archive-article-date">
-  <time class="dt-published" datetime="2022-03-06T10:49:08.000Z" itemprop="datePublished">3月 6</time>
+        <section id="main"><article id="post-typescript-build-publish-npm-package" class="h-entry article article-type-post" itemprop="blogPost" itemscope itemtype="https://schema.org/BlogPosting">
+  <div class="article-meta">
+    <a href="/2022/03/08/typescript-build-publish-npm-package/" class="article-date">
+  <time class="dt-published" datetime="2022-03-08T07:17:44.000Z" itemprop="datePublished">2022-03-08</time>
 </a>
-      
+    
+  <div class="article-category">
+    <a class="article-category-link" href="/categories/it-%E6%8A%80%E6%9C%AF/">it 技术</a>
+  </div>
+
+  </div>
+  <div class="article-inner">
+    
+    
+      <header class="article-header">
+        
   
-    <h1 itemprop="name">
-      <a class="archive-article-title" href="/2022/03/06/hexo-image-align-left/">Hexo 文章图片居左的处理</a>
+    <h1 class="p-name article-title" itemprop="headline name">
+      Typescript 构建并发布 npm 包
     </h1>
   
 
-    </header>
-  </div>
-</article>
-  
+      </header>
     
-    
-    <article class="archive-article archive-type-post">
-  <div class="archive-article-inner">
-    <header class="archive-article-header">
-      <a href="/2022/03/05/hello-world/" class="archive-article-date">
-  <time class="dt-published" datetime="2022-03-05T02:16:59.638Z" itemprop="datePublished">3月 5</time>
-</a>
+    <div class="e-content article-entry" itemprop="articleBody">
       
-  
-    <h1 itemprop="name">
-      <a class="archive-article-title" href="/2022/03/05/hello-world/">Hello World</a>
-    </h1>
-  
+        <p>typescript 项目怎样编译打包发布到 npm, 并且能够让其他项目通过 javascript 和 typescript 使用。</p>
+<p>为此写了两个测试项目：</p>
+<ul>
+<li><a target="_blank" rel="noopener" href="https://github.com/MarshalW/fake-ts-service">MarshalW&#x2F;fake-ts-service</a> ，发布到 npm 的包</li>
+<li><a target="_blank" rel="noopener" href="https://github.com/MarshalW/fake-ts-service-client">MarshalW&#x2F;fake-ts-service-client</a>，使用 face-ts-service 的 js&#x2F;ts 程序</li>
+</ul>
+<p><strong>实现 <a target="_blank" rel="noopener" href="https://github.com/MarshalW/fake-ts-service">MarshalW&#x2F;fake-ts-service</a> 需要注意的点：</strong></p>
+<span id="more"></span>
 
-    </header>
+<ul>
+<li><p>tsconfig.json</p>
+<ul>
+<li>可通过命令生成 <code>tsc --init</code></li>
+<li><code>&quot;compilerOptions&quot;</code> 属性下：<ul>
+<li><code>&quot;module&quot;: &quot;ESNext&quot;</code>，默认是<code>commonjs</code></li>
+<li><code>&quot;declaration&quot;: true,</code>，默认是屏蔽的</li>
+<li><code>&quot;declarationMap&quot;: true,</code>, 默认是屏蔽的</li>
+<li><code>&quot;outDir&quot;: &quot;./lib&quot;</code>，设置构建输出路径</li>
+</ul>
+</li>
+<li><code>&quot;include&quot;: [&quot;src&quot;]</code></li>
+<li><code>&quot;exclude&quot;: [&quot;node_modules&quot;, &quot;**/__tests__/*&quot;]</code></li>
+</ul>
+</li>
+<li><p>package.json</p>
+<ul>
+<li><code>&quot;main&quot;: &quot;lib/index.js&quot;,</code></li>
+<li><code>&quot;types&quot;: &quot;lib/index.d.ts&quot;,</code>，为了 typescript 应用引用这个包时的类型定义</li>
+<li><code>&quot;files&quot;: [ ..</code>，设置打包文件的白名单，这样不会再输出 src</li>
+</ul>
+</li>
+<li><p>执行：</p>
+<ul>
+<li><code>npm run build</code>，编译生成 javascript，在 lib 目录下</li>
+<li><code>npm test</code>，执行测试，验证本地导入和执行模块</li>
+<li><code>npm version patch</code>，在确保 git 提交后，设置小版本更新</li>
+<li><code>npm publish</code>，发布当前更新的 npm 包</li>
+</ul>
+</li>
+</ul>
+<p><strong>实现 <a target="_blank" rel="noopener" href="https://github.com/MarshalW/fake-ts-service-client">MarshalW&#x2F;fake-ts-service-client</a> 需要注意的点：</strong></p>
+<ul>
+<li><p>tsconfig.json</p>
+<ul>
+<li><code>&quot;compilerOptions&quot;</code><ul>
+<li><code>&quot;module&quot;: &quot;ESNext&quot;</code>,</li>
+<li><code>&quot;moduleResolution&quot;: &quot;node&quot;</code>, 否则 tsc 编译会无法解析包</li>
+<li><code>&quot;outDir&quot;: &quot;./dist&quot;</code></li>
+</ul>
+</li>
+</ul>
+</li>
+<li><p>package.json</p>
+<ul>
+<li><code>&quot;main&quot;: &quot;dist/index.js&quot;,</code></li>
+<li><code>&quot;type&quot;: &quot;module&quot;,</code></li>
+</ul>
+</li>
+<li><p>执行：</p>
+<ul>
+<li><code>npm i</code>, </li>
+<li><code>node test.js</code>, 测试js代码直接访问fake-ts-service</li>
+<li><code>npm run build</code></li>
+<li><code>npm start</code>, 测试ts代码访问fake-ts-service</li>
+</ul>
+</li>
+</ul>
+
+      
+    </div>
+    <footer class="article-footer">
+      <a data-url="https://marshal.ohtly.com/2022/03/08/typescript-build-publish-npm-package/" data-id="cl0hue3vx0000asf383ej8lc8" data-title="Typescript 构建并发布 npm 包" class="article-share-link">分享</a>
+      
+      
+      
+  <ul class="article-tag-list" itemprop="keywords"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/node-js/" rel="tag">node.js</a></li><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/npm/" rel="tag">npm</a></li><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/p2022a/" rel="tag">p2022a</a></li><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/typescript/" rel="tag">typescript</a></li></ul>
+
+    </footer>
   </div>
+  
+    
+<nav id="article-nav">
+  
+  
+    <a href="/2022/03/07/npm-publish-packgage-from-github-actions/" id="article-nav-older" class="article-nav-link-wrap">
+      <strong class="article-nav-caption">后一篇</strong>
+      <div class="article-nav-title">配置 GitHub Actions 向 npm 发布包的步骤</div>
+    </a>
+  
+</nav>
+
+  
 </article>
-  
-  
-    </div></section>
-  
 
 
 </section>

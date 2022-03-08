@@ -75,117 +75,6 @@
       <div class="outer">
         <section id="main">
   
-    <article id="post-typescript-build-publish-npm-package" class="h-entry article article-type-post" itemprop="blogPost" itemscope itemtype="https://schema.org/BlogPosting">
-  <div class="article-meta">
-    <a href="/2022/03/08/typescript-build-publish-npm-package/" class="article-date">
-  <time class="dt-published" datetime="2022-03-08T07:17:44.000Z" itemprop="datePublished">2022-03-08</time>
-</a>
-    
-  <div class="article-category">
-    <a class="article-category-link" href="/categories/it-%E6%8A%80%E6%9C%AF/">it 技术</a>
-  </div>
-
-  </div>
-  <div class="article-inner">
-    
-    
-      <header class="article-header">
-        
-  
-    <h1 itemprop="name">
-      <a class="p-name article-title" href="/2022/03/08/typescript-build-publish-npm-package/">Typescript 构建并发布 npm 包</a>
-    </h1>
-  
-
-      </header>
-    
-    <div class="e-content article-entry" itemprop="articleBody">
-      
-        <p>typescript 项目怎样编译打包发布到 npm, 并且能够让其他项目通过 javascript 和 typescript 使用。</p>
-<p>为此写了两个测试项目：</p>
-<ul>
-<li><a target="_blank" rel="noopener" href="https://github.com/MarshalW/fake-ts-service">MarshalW&#x2F;fake-ts-service</a> ，发布到 npm 的包</li>
-<li><a target="_blank" rel="noopener" href="https://github.com/MarshalW/fake-ts-service-client">MarshalW&#x2F;fake-ts-service-client</a>，使用 face-ts-service 的 js&#x2F;ts 程序</li>
-</ul>
-<p><strong>实现 <a target="_blank" rel="noopener" href="https://github.com/MarshalW/fake-ts-service">MarshalW&#x2F;fake-ts-service</a> 需要注意的点：</strong></p>
-        
-          <p class="article-more-link">
-            <a href="/2022/03/08/typescript-build-publish-npm-package/#more">Read More</a>
-          </p>
-        
-      
-    </div>
-    <footer class="article-footer">
-      <a data-url="https://marshal.ohtly.com/2022/03/08/typescript-build-publish-npm-package/" data-id="cl0hue3vx0000asf383ej8lc8" data-title="Typescript 构建并发布 npm 包" class="article-share-link">分享</a>
-      
-      
-      
-  <ul class="article-tag-list" itemprop="keywords"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/node-js/" rel="tag">node.js</a></li><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/npm/" rel="tag">npm</a></li><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/p2022a/" rel="tag">p2022a</a></li><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/typescript/" rel="tag">typescript</a></li></ul>
-
-    </footer>
-  </div>
-  
-</article>
-
-
-
-  
-    <article id="post-npm-publish-packgage-from-github-actions" class="h-entry article article-type-post" itemprop="blogPost" itemscope itemtype="https://schema.org/BlogPosting">
-  <div class="article-meta">
-    <a href="/2022/03/07/npm-publish-packgage-from-github-actions/" class="article-date">
-  <time class="dt-published" datetime="2022-03-07T07:06:10.000Z" itemprop="datePublished">2022-03-07</time>
-</a>
-    
-  <div class="article-category">
-    <a class="article-category-link" href="/categories/it-%E6%8A%80%E6%9C%AF/">it 技术</a>
-  </div>
-
-  </div>
-  <div class="article-inner">
-    
-    
-      <header class="article-header">
-        
-  
-    <h1 itemprop="name">
-      <a class="p-name article-title" href="/2022/03/07/npm-publish-packgage-from-github-actions/">配置 GitHub Actions 向 npm 发布包的步骤</a>
-    </h1>
-  
-
-      </header>
-    
-    <div class="e-content article-entry" itemprop="articleBody">
-      
-        <p>向 <a target="_blank" rel="noopener" href="https://www.npmjs.com/">npm</a> 发布 package 的最简单的方式是：</p>
-<ul>
-<li>免费注册 npm 账号，并通过命令登录：<code>npm login</code></li>
-<li>在当前项目目录下执行 <code>npm publish .</code></li>
-</ul>
-<p>这样不够自动化，每次需要手动执行命令。</p>
-<p>可以借助 GitHub 的 Actions，当 push 代码后触发指定事件，会执行 build 过程并将 package 发布到 npm。</p>
-<p>基本过程是：</p>
-        
-          <p class="article-more-link">
-            <a href="/2022/03/07/npm-publish-packgage-from-github-actions/#more">Read More</a>
-          </p>
-        
-      
-    </div>
-    <footer class="article-footer">
-      <a data-url="https://marshal.ohtly.com/2022/03/07/npm-publish-packgage-from-github-actions/" data-id="cl0geljf70000ocf3f0o24vbv" data-title="配置 GitHub Actions 向 npm 发布包的步骤" class="article-share-link">分享</a>
-      
-      
-      
-  <ul class="article-tag-list" itemprop="keywords"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/github/" rel="tag">github</a></li><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/node-js/" rel="tag">node.js</a></li><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/npm/" rel="tag">npm</a></li><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/p2022a/" rel="tag">p2022a</a></li></ul>
-
-    </footer>
-  </div>
-  
-</article>
-
-
-
-  
     <article id="post-hexo-image-align-left" class="h-entry article article-type-post" itemprop="blogPost" itemscope itemtype="https://schema.org/BlogPosting">
   <div class="article-meta">
     <a href="/2022/03/06/hexo-image-align-left/" class="article-date">
@@ -223,7 +112,7 @@
       
     </div>
     <footer class="article-footer">
-      <a data-url="https://marshal.ohtly.com/2022/03/06/hexo-image-align-left/" data-id="cl0g5bb88000502f3benzcrge" data-title="Hexo 文章图片居左的处理" class="article-share-link">分享</a>
+      <a data-url="https://marshal.ohtly.com/2022/03/06/hexo-image-align-left/" data-id="cl0f5vclx0000gy4yaq4dbjr2" data-title="Hexo 文章图片居左的处理" class="article-share-link">分享</a>
       
       
       
@@ -276,7 +165,7 @@
       
     </div>
     <footer class="article-footer">
-      <a data-url="https://marshal.ohtly.com/2022/03/06/basic-use-of-pve/" data-id="cl0g5bb7x000002f3hk77eb5t" data-title="使用 Proxmox VE 做本地服务器虚拟化" class="article-share-link">分享</a>
+      <a data-url="https://marshal.ohtly.com/2022/03/06/basic-use-of-pve/" data-id="cl0f146r10000vq4ygm3e7iic" data-title="使用 Proxmox VE 做本地服务器虚拟化" class="article-share-link">分享</a>
       
       
       
@@ -327,11 +216,11 @@
       
     </div>
     <footer class="article-footer">
-      <a data-url="https://marshal.ohtly.com/2022/03/06/create-a-ts-koa-proto/" data-id="cl0g5bb83000102f3hyu10hab" data-title="创建 koa-ts 原型项目，为新项目做技术准备" class="article-share-link">分享</a>
+      <a data-url="https://marshal.ohtly.com/2022/03/06/create-a-ts-koa-proto/" data-id="cl0etiqq30000mi4y1bxk8z0d" data-title="创建 koa-ts 原型项目，为新项目做技术准备" class="article-share-link">分享</a>
       
       
       
-  <ul class="article-tag-list" itemprop="keywords"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/docker/" rel="tag">docker</a></li><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/koa/" rel="tag">koa</a></li><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/lcdp/" rel="tag">lcdp</a></li><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/node-js/" rel="tag">node.js</a></li><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/p2022a/" rel="tag">p2022a</a></li><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/typescript/" rel="tag">typescript</a></li><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/%E8%99%9A%E6%8B%9F%E5%8C%96/" rel="tag">虚拟化</a></li></ul>
+  <ul class="article-tag-list" itemprop="keywords"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/docker/" rel="tag">docker</a></li><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/koa/" rel="tag">koa</a></li><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/lcdp/" rel="tag">lcdp</a></li><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/node-js/" rel="tag">node.js</a></li><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/typescript/" rel="tag">typescript</a></li><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/%E8%99%9A%E6%8B%9F%E5%8C%96/" rel="tag">虚拟化</a></li></ul>
 
     </footer>
   </div>
@@ -384,7 +273,7 @@
       
     </div>
     <footer class="article-footer">
-      <a data-url="https://marshal.ohtly.com/2022/03/05/hello-world/" data-id="cl0g5bb87000402f3bqdw2nix" data-title="Hello World" class="article-share-link">分享</a>
+      <a data-url="https://marshal.ohtly.com/2022/03/05/hello-world/" data-id="cl0d7xhfk0001qq4yhbb52i26" data-title="Hello World" class="article-share-link">分享</a>
       
       
       
@@ -418,7 +307,7 @@
   <div class="widget-wrap">
     <h3 class="widget-title">标签</h3>
     <div class="widget">
-      <ul class="tag-list" itemprop="keywords"><li class="tag-list-item"><a class="tag-list-link" href="/tags/docker/" rel="tag">docker</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/github/" rel="tag">github</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/hexo/" rel="tag">hexo</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/koa/" rel="tag">koa</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/lcdp/" rel="tag">lcdp</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/node-js/" rel="tag">node.js</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/npm/" rel="tag">npm</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/p2022a/" rel="tag">p2022a</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/pve/" rel="tag">pve</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/typescript/" rel="tag">typescript</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/%E8%99%9A%E6%8B%9F%E5%8C%96/" rel="tag">虚拟化</a></li></ul>
+      <ul class="tag-list" itemprop="keywords"><li class="tag-list-item"><a class="tag-list-link" href="/tags/docker/" rel="tag">docker</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/hexo/" rel="tag">hexo</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/koa/" rel="tag">koa</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/lcdp/" rel="tag">lcdp</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/node-js/" rel="tag">node.js</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/pve/" rel="tag">pve</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/typescript/" rel="tag">typescript</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/%E8%99%9A%E6%8B%9F%E5%8C%96/" rel="tag">虚拟化</a></li></ul>
     </div>
   </div>
 
@@ -428,7 +317,7 @@
   <div class="widget-wrap">
     <h3 class="widget-title">标签云</h3>
     <div class="widget tagcloud">
-      <a href="/tags/docker/" style="font-size: 10px;">docker</a> <a href="/tags/github/" style="font-size: 10px;">github</a> <a href="/tags/hexo/" style="font-size: 15px;">hexo</a> <a href="/tags/koa/" style="font-size: 10px;">koa</a> <a href="/tags/lcdp/" style="font-size: 10px;">lcdp</a> <a href="/tags/node-js/" style="font-size: 20px;">node.js</a> <a href="/tags/npm/" style="font-size: 15px;">npm</a> <a href="/tags/p2022a/" style="font-size: 20px;">p2022a</a> <a href="/tags/pve/" style="font-size: 10px;">pve</a> <a href="/tags/typescript/" style="font-size: 15px;">typescript</a> <a href="/tags/%E8%99%9A%E6%8B%9F%E5%8C%96/" style="font-size: 15px;">虚拟化</a>
+      <a href="/tags/docker/" style="font-size: 10px;">docker</a> <a href="/tags/hexo/" style="font-size: 20px;">hexo</a> <a href="/tags/koa/" style="font-size: 10px;">koa</a> <a href="/tags/lcdp/" style="font-size: 10px;">lcdp</a> <a href="/tags/node-js/" style="font-size: 10px;">node.js</a> <a href="/tags/pve/" style="font-size: 10px;">pve</a> <a href="/tags/typescript/" style="font-size: 10px;">typescript</a> <a href="/tags/%E8%99%9A%E6%8B%9F%E5%8C%96/" style="font-size: 20px;">虚拟化</a>
     </div>
   </div>
 
@@ -450,14 +339,6 @@
       <ul>
         
           <li>
-            <a href="/2022/03/08/typescript-build-publish-npm-package/">Typescript 构建并发布 npm 包</a>
-          </li>
-        
-          <li>
-            <a href="/2022/03/07/npm-publish-packgage-from-github-actions/">配置 GitHub Actions 向 npm 发布包的步骤</a>
-          </li>
-        
-          <li>
             <a href="/2022/03/06/hexo-image-align-left/">Hexo 文章图片居左的处理</a>
           </li>
         
@@ -467,6 +348,10 @@
         
           <li>
             <a href="/2022/03/06/create-a-ts-koa-proto/">创建 koa-ts 原型项目，为新项目做技术准备</a>
+          </li>
+        
+          <li>
+            <a href="/2022/03/05/hello-world/">Hello World</a>
           </li>
         
       </ul>
