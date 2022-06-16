@@ -6,15 +6,15 @@
   
   <title>树莓派 zero headless 安装 Raspberry Pi OS Lite 设置 ssh | Marshal 的日志</title>
   <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
-  <meta name="description" content="rpi zero, 以前的 headless ssh 设置只需要在 &#x2F;boot 下创建一个名为 ssh 的空文件即可，会自动创建 pi用户，密码是 raspberry。 使用最新的 Raspberry Pi OS Lite (基于 Debian bullseye)，有了少许变化。 需要创建两个文件：  &#x2F;boot&#x2F;ssh，和以前一样，一个空文件，系统识别该文件并允许 ssh 远程访问 &#x2F;">
+  <meta name="description" content="树莓派 zero, 以前的 headless 系统安装， ssh 设置只需要在 &#x2F;boot 下创建一个名为 ssh 的空文件即可，会自动创建 pi用户，密码是 raspberry。 使用最新的 Raspberry Pi OS Lite (基于 Debian bullseye)，有了少许变化。 需要创建两个文件：  &#x2F;boot&#x2F;ssh，和以前一样，一个空文件，系统识别该文件并允许 ssh">
 <meta property="og:type" content="article">
 <meta property="og:title" content="树莓派 zero headless 安装 Raspberry Pi OS Lite 设置 ssh">
 <meta property="og:url" content="https://marshal.ohtly.com/2022/06/16/rpi-zero-headless-setup-ssh/index.html">
 <meta property="og:site_name" content="Marshal 的日志">
-<meta property="og:description" content="rpi zero, 以前的 headless ssh 设置只需要在 &#x2F;boot 下创建一个名为 ssh 的空文件即可，会自动创建 pi用户，密码是 raspberry。 使用最新的 Raspberry Pi OS Lite (基于 Debian bullseye)，有了少许变化。 需要创建两个文件：  &#x2F;boot&#x2F;ssh，和以前一样，一个空文件，系统识别该文件并允许 ssh 远程访问 &#x2F;">
+<meta property="og:description" content="树莓派 zero, 以前的 headless 系统安装， ssh 设置只需要在 &#x2F;boot 下创建一个名为 ssh 的空文件即可，会自动创建 pi用户，密码是 raspberry。 使用最新的 Raspberry Pi OS Lite (基于 Debian bullseye)，有了少许变化。 需要创建两个文件：  &#x2F;boot&#x2F;ssh，和以前一样，一个空文件，系统识别该文件并允许 ssh">
 <meta property="og:locale" content="zh_CN">
 <meta property="article:published_time" content="2022-06-16T13:44:21.000Z">
-<meta property="article:modified_time" content="2022-06-16T14:11:11.096Z">
+<meta property="article:modified_time" content="2022-06-16T14:24:34.277Z">
 <meta property="article:author" content="Marshal Wu">
 <meta property="article:tag" content="raspberrypi">
 <meta property="article:tag" content="rpi zero">
@@ -105,7 +105,7 @@
     
     <div class="e-content article-entry" itemprop="articleBody">
       
-        <p>rpi zero, 以前的 headless ssh 设置只需要在 &#x2F;boot 下创建一个名为 ssh 的空文件即可，会自动创建 <code>pi</code>用户，密码是 <code>raspberry</code>。</p>
+        <p>树莓派 zero, 以前的 headless 系统安装， ssh 设置只需要在 &#x2F;boot 下创建一个名为 ssh 的空文件即可，会自动创建 <code>pi</code>用户，密码是 <code>raspberry</code>。</p>
 <p>使用最新的<a target="_blank" rel="noopener" href="https://downloads.raspberrypi.org/raspios_lite_armhf/images/"> Raspberry Pi OS Lite</a> (基于 Debian bullseye)，有了少许变化。</p>
 <p>需要创建两个文件：</p>
 <ul>
@@ -116,7 +116,7 @@
 <figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">$ <span class="built_in">echo</span> <span class="string">&#x27;mypassword&#x27;</span> | openssl passwd -6 -stdin</span><br></pre></td></tr></table></figure>
 
 <p>本文参考了 <a target="_blank" rel="noopener" href="https://www.raspberrypi.com/documentation/computers/configuration.html#setting-up-a-headless-raspberry-pi">Raspberry Pi Document - Setting up a Headless Raspberry Pi</a></p>
-<p>另外，zero 还是不能安装 ubuntu。</p>
+<p>另外，zero 还是不能安装 ubuntu （<a target="_blank" rel="noopener" href="https://forums.raspberrypi.com/viewtopic.php?t=299886"><br>Is there a way to install Ubuntu 20.04.1 LTS on Zero W?</a>）。</p>
 <p>附上这次安装的过程（macOS）：</p>
 <span id="more"></span>
 
