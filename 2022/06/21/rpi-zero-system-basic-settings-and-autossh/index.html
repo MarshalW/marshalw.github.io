@@ -1,0 +1,288 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="utf-8">
+  
+  
+  <title>树莓派 zero 系统配置和 autossh 安装配置 | Marshal 的日志</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+  <meta name="description" content="在 树莓派 zero headless 安装 Raspberry Pi OS Lite 设置 ssh 安装了基础系统。 系统还需要做一些基本配置，使用 ansible 让这个过程自动化，也方便以后重做。 完整代码见：MarshalW&#x2F;device-management(私有) 系统基本设置主要的基本设置是：  修改设备主机名 设置 apt 镜像 本地 ssh public key 加入到">
+<meta property="og:type" content="article">
+<meta property="og:title" content="树莓派 zero 系统配置和 autossh 安装配置">
+<meta property="og:url" content="https://marshal.ohtly.com/2022/06/21/rpi-zero-system-basic-settings-and-autossh/index.html">
+<meta property="og:site_name" content="Marshal 的日志">
+<meta property="og:description" content="在 树莓派 zero headless 安装 Raspberry Pi OS Lite 设置 ssh 安装了基础系统。 系统还需要做一些基本配置，使用 ansible 让这个过程自动化，也方便以后重做。 完整代码见：MarshalW&#x2F;device-management(私有) 系统基本设置主要的基本设置是：  修改设备主机名 设置 apt 镜像 本地 ssh public key 加入到">
+<meta property="og:locale" content="zh_CN">
+<meta property="article:published_time" content="2022-06-21T01:24:12.000Z">
+<meta property="article:modified_time" content="2022-06-21T01:58:19.696Z">
+<meta property="article:author" content="Marshal Wu">
+<meta property="article:tag" content="raspberrypi">
+<meta property="article:tag" content="rpi zero">
+<meta property="article:tag" content="ansible">
+<meta property="article:tag" content="autossh">
+<meta name="twitter:card" content="summary">
+  
+    <link rel="alternate" href="/atom.xml" title="Marshal 的日志" type="application/atom+xml">
+  
+  
+    <link rel="shortcut icon" href="/favicon.png">
+  
+  
+    
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/typeface-source-code-pro@0.0.71/index.min.css">
+
+  
+  
+<link rel="stylesheet" href="/css/style.css">
+
+  
+    
+<link rel="stylesheet" href="/fancybox/jquery.fancybox.min.css">
+
+  
+<meta name="generator" content="Hexo 6.0.0"></head>
+
+<body>
+  <div id="container">
+    <div id="wrap">
+      <header id="header">
+  <div id="banner"></div>
+  <div id="header-outer" class="outer">
+    <div id="header-title" class="inner">
+      <h1 id="logo-wrap">
+        <a href="/" id="logo">Marshal 的日志</a>
+      </h1>
+      
+        <h2 id="subtitle-wrap">
+          <a href="/" id="subtitle">给自己写的，可分享的日常记录</a>
+        </h2>
+      
+    </div>
+    <div id="header-inner" class="inner">
+      <nav id="main-nav">
+        <a id="main-nav-toggle" class="nav-icon"></a>
+        
+          <a class="main-nav-link" href="/">Home</a>
+        
+          <a class="main-nav-link" href="/archives">Archives</a>
+        
+      </nav>
+      <nav id="sub-nav">
+        
+          <a id="nav-rss-link" class="nav-icon" href="/atom.xml" title="RSS 订阅"></a>
+        
+        <a id="nav-search-btn" class="nav-icon" title="搜索"></a>
+      </nav>
+      <div id="search-form-wrap">
+        <form action="//google.com/search" method="get" accept-charset="UTF-8" class="search-form"><input type="search" name="q" class="search-form-input" placeholder="搜索"><button type="submit" class="search-form-submit">&#xF002;</button><input type="hidden" name="sitesearch" value="https://marshal.ohtly.com"></form>
+      </div>
+    </div>
+  </div>
+</header>
+
+      <div class="outer">
+        <section id="main"><article id="post-rpi-zero-system-basic-settings-and-autossh" class="h-entry article article-type-post" itemprop="blogPost" itemscope itemtype="https://schema.org/BlogPosting">
+  <div class="article-meta">
+    <a href="/2022/06/21/rpi-zero-system-basic-settings-and-autossh/" class="article-date">
+  <time class="dt-published" datetime="2022-06-21T01:24:12.000Z" itemprop="datePublished">2022-06-21</time>
+</a>
+    
+  <div class="article-category">
+    <a class="article-category-link" href="/categories/it-%E6%8A%80%E6%9C%AF/">it 技术</a>
+  </div>
+
+  </div>
+  <div class="article-inner">
+    
+    
+      <header class="article-header">
+        
+  
+    <h1 class="p-name article-title" itemprop="headline name">
+      树莓派 zero 系统配置和 autossh 安装配置
+    </h1>
+  
+
+      </header>
+    
+    <div class="e-content article-entry" itemprop="articleBody">
+      
+        <p>在 <a href="/2022/06/16/rpi-zero-headless-setup-ssh/" title="树莓派 zero headless 安装 Raspberry Pi OS Lite 设置 ssh">树莓派 zero headless 安装 Raspberry Pi OS Lite 设置 ssh</a> 安装了基础系统。</p>
+<p>系统还需要做一些基本配置，使用 ansible 让这个过程自动化，也方便以后重做。</p>
+<p>完整代码见：<a target="_blank" rel="noopener" href="https://github.com/MarshalW/device-management/tree/main/devices/rpi/zero">MarshalW&#x2F;device-management(私有)</a></p>
+<h2 id="系统基本设置"><a href="#系统基本设置" class="headerlink" title="系统基本设置"></a>系统基本设置</h2><p>主要的基本设置是：</p>
+<ul>
+<li>修改设备主机名</li>
+<li>设置 apt 镜像</li>
+<li>本地 ssh public key 加入到 rpi authorized_keys (无密码登录)</li>
+<li>禁用 rpi ssh 密码登录</li>
+<li>关闭 swap</li>
+<li>设置时区</li>
+</ul>
+<span id="more"></span>
+
+<p>ansible playbook 代码 (basic-settings.yml) 如下:</p>
+<figure class="highlight yml"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">---</span></span><br><span class="line"><span class="bullet">-</span> <span class="attr">hosts:</span> <span class="string">raspberrypi</span></span><br><span class="line">  <span class="attr">gather_facts:</span> <span class="literal">no</span></span><br><span class="line">  <span class="attr">tasks:</span></span><br><span class="line">    <span class="bullet">-</span> <span class="attr">name:</span> <span class="string">Change</span> <span class="string">host</span> <span class="string">name</span></span><br><span class="line">      <span class="attr">become:</span> <span class="literal">yes</span></span><br><span class="line">      <span class="attr">shell:</span> <span class="string">|</span></span><br><span class="line"><span class="string">        echo &#123;&#123;new_hostname&#125;&#125; | tee /etc/hostname</span></span><br><span class="line"><span class="string"></span></span><br><span class="line">        <span class="string">sed</span> <span class="string">-i</span> <span class="string">-E</span> <span class="string">&#x27;s/^127.0.1.1.*/127.0.1.1\t&#x27;</span><span class="string">&quot;<span class="template-variable">&#123;&#123;new_hostname&#125;&#125;</span>&quot;</span><span class="string">&#x27;/&#x27;</span> <span class="string">/etc/hosts</span></span><br><span class="line">        <span class="string">hostnamectl</span> <span class="string">set-hostname</span> &#123;&#123;<span class="string">new_hostname</span>&#125;&#125;</span><br><span class="line"></span><br><span class="line">        <span class="string">systemctl</span> <span class="string">restart</span> <span class="string">avahi-daemon</span></span><br><span class="line">    <span class="bullet">-</span> <span class="attr">name:</span> <span class="string">Set</span> <span class="string">apt</span> <span class="string">mirror</span></span><br><span class="line">      <span class="attr">become:</span> <span class="literal">yes</span></span><br><span class="line">      <span class="attr">shell:</span> <span class="string">|</span></span><br><span class="line"><span class="string">        cp /etc/apt/sources.list&#123;,.ori&#125;</span></span><br><span class="line"><span class="string"></span></span><br><span class="line">        <span class="string">cat</span> <span class="string">&gt;/etc/apt/sources.list</span> <span class="string">&lt;&lt;EOF</span></span><br><span class="line">        <span class="string">deb</span> <span class="string">http://mirrors.tuna.tsinghua.edu.cn/raspbian/raspbian/</span> <span class="string">bullseye</span> <span class="string">main</span> <span class="string">contrib</span> <span class="string">non-free</span> <span class="string">rpi</span></span><br><span class="line">        <span class="string">EOF</span></span><br><span class="line">    <span class="bullet">-</span> <span class="attr">name:</span> <span class="string">Set</span> <span class="string">authorized</span> <span class="string">key</span> <span class="string">took</span> <span class="string">from</span> <span class="string">file</span></span><br><span class="line">      <span class="attr">vars:</span></span><br><span class="line">        <span class="attr">file:</span> <span class="string">~/.ssh/id_rsa.pub</span></span><br><span class="line">      <span class="attr">authorized_key:</span></span><br><span class="line">        <span class="attr">user:</span> <span class="string">&quot;<span class="template-variable">&#123;&#123;ansible_user&#125;&#125;</span>&quot;</span></span><br><span class="line">        <span class="attr">state:</span> <span class="string">present</span></span><br><span class="line">        <span class="attr">key:</span> <span class="string">&quot;<span class="template-variable">&#123;&#123; lookup(&#x27;file&#x27;, file) &#125;&#125;</span>&quot;</span></span><br><span class="line">    <span class="bullet">-</span> <span class="attr">name:</span> <span class="string">Generate</span> <span class="string">an</span> <span class="string">OpenSSH</span> <span class="string">rsa</span> <span class="string">keypair</span> <span class="string">with</span> <span class="string">a</span> <span class="string">different</span> <span class="string">size</span> <span class="string">(2048</span> <span class="string">bits)</span></span><br><span class="line">      <span class="attr">shell:</span> <span class="string">|</span></span><br><span class="line"><span class="string">        ssh-keygen -q -t rsa -b 4096 -N &#x27;&#x27; -f ~/.ssh/id_rsa</span></span><br><span class="line"><span class="string"></span>    <span class="bullet">-</span> <span class="attr">name:</span> <span class="string">Config</span> <span class="string">others</span></span><br><span class="line">      <span class="attr">become:</span> <span class="literal">yes</span></span><br><span class="line">      <span class="attr">shell:</span> <span class="string">|</span></span><br><span class="line"><span class="string">        # Disable swap</span></span><br><span class="line"><span class="string">        swapoff -a</span></span><br><span class="line"><span class="string">        sed -i &#x27;/swap/d&#x27; /etc/fstab</span></span><br><span class="line"><span class="string"></span></span><br><span class="line">        <span class="comment"># Set timezone</span></span><br><span class="line">        <span class="string">timedatectl</span> <span class="string">set-timezone</span> <span class="string">Asia/Shanghai</span></span><br><span class="line">    <span class="bullet">-</span> <span class="attr">name:</span> <span class="string">&quot;Disable ssh password authentication&quot;</span></span><br><span class="line">      <span class="attr">become:</span> <span class="literal">yes</span></span><br><span class="line">      <span class="attr">shell:</span> <span class="string">sed</span> <span class="string">-i</span> <span class="string">&quot;s/.*PasswordAuthentication.*/PasswordAuthentication no/g&quot;</span> <span class="string">/etc/ssh/sshd_config</span></span><br></pre></td></tr></table></figure>
+
+<p>执行：</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">ansible-playbook basic-settings.yml -vvvv \</span><br><span class="line">    --extra-vars <span class="string">&quot;ansible_user=zhangsan \</span></span><br><span class="line"><span class="string">                  new_hostname=a01&quot;</span></span><br></pre></td></tr></table></figure>
+
+<h2 id="autossh-安装配置"><a href="#autossh-安装配置" class="headerlink" title="autossh 安装配置"></a>autossh 安装配置</h2><p>安装和配置 autossh 的步骤：</p>
+<ul>
+<li>树莓派安装 autossh</li>
+<li>跳板机安装 acl</li>
+<li>设置树莓派到跳板机免密码登录（pulic key）</li>
+<li>树莓派设置 ssh config，跳板机参数</li>
+<li>树莓派创建 autossh.service 服务配置文件，并启动 autossh.service</li>
+</ul>
+<p>安装和配置 autossh 的 ansible playbook 代码 (autossh.yml):</p>
+<figure class="highlight yml"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br><span class="line">57</span><br><span class="line">58</span><br><span class="line">59</span><br><span class="line">60</span><br><span class="line">61</span><br><span class="line">62</span><br><span class="line">63</span><br><span class="line">64</span><br><span class="line">65</span><br><span class="line">66</span><br><span class="line">67</span><br><span class="line">68</span><br><span class="line">69</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">---</span></span><br><span class="line"><span class="meta">---</span></span><br><span class="line"><span class="bullet">-</span> <span class="attr">hosts:</span> <span class="string">&quot;<span class="template-variable">&#123;&#123;hostname&#125;&#125;</span>&quot;</span></span><br><span class="line">  <span class="attr">gather_facts:</span> <span class="literal">no</span></span><br><span class="line">  <span class="attr">tasks:</span></span><br><span class="line">    <span class="bullet">-</span> <span class="attr">name:</span> <span class="string">Install</span> <span class="string">autossh</span></span><br><span class="line">      <span class="attr">become:</span> <span class="literal">yes</span></span><br><span class="line">      <span class="attr">shell:</span> <span class="string">|</span></span><br><span class="line"><span class="string">        apt-get update</span></span><br><span class="line"><span class="string">        apt-get install autossh -y -qq</span></span><br><span class="line"><span class="string"></span>    <span class="bullet">-</span> <span class="attr">name:</span> <span class="string">Slurp</span> <span class="string">ssh</span> <span class="string">key</span> <span class="string">file</span></span><br><span class="line">      <span class="attr">slurp:</span></span><br><span class="line">        <span class="attr">src:</span> <span class="string">&quot;~/.ssh/id_rsa.pub&quot;</span></span><br><span class="line">      <span class="attr">register:</span> <span class="string">slurpfile</span></span><br><span class="line"></span><br><span class="line"><span class="bullet">-</span> <span class="attr">hosts:</span> <span class="string">&quot;<span class="template-variable">&#123;&#123;jump_server&#125;&#125;</span>&quot;</span></span><br><span class="line">  <span class="attr">gather_facts:</span> <span class="literal">no</span></span><br><span class="line">  <span class="attr">tasks:</span></span><br><span class="line">    <span class="bullet">-</span> <span class="attr">name:</span> <span class="string">Install</span> <span class="string">acl</span></span><br><span class="line">      <span class="attr">become:</span> <span class="literal">yes</span></span><br><span class="line">      <span class="attr">shell:</span> <span class="string">|</span></span><br><span class="line"><span class="string">        apt-get install acl -y -qq</span></span><br><span class="line"><span class="string"></span>    <span class="bullet">-</span> <span class="attr">name:</span> <span class="string">&quot;Set authorized key took from file&quot;</span></span><br><span class="line">      <span class="attr">become:</span> <span class="literal">yes</span></span><br><span class="line">      <span class="attr">become_user:</span> <span class="string">jumper</span></span><br><span class="line">      <span class="attr">authorized_key:</span></span><br><span class="line">        <span class="attr">user:</span> <span class="string">&quot;jumper&quot;</span></span><br><span class="line">        <span class="attr">state:</span> <span class="string">present</span></span><br><span class="line">        <span class="attr">key:</span> <span class="string">&quot;<span class="template-variable">&#123;&#123; hostvars[hostname][&#x27;slurpfile&#x27;].content | b64decode &#125;&#125;</span>&quot;</span></span><br><span class="line"></span><br><span class="line"><span class="bullet">-</span> <span class="attr">hosts:</span> <span class="string">&quot;<span class="template-variable">&#123;&#123;hostname&#125;&#125;</span>&quot;</span></span><br><span class="line">  <span class="attr">gather_facts:</span> <span class="literal">no</span></span><br><span class="line">  <span class="attr">tasks:</span></span><br><span class="line">    <span class="bullet">-</span> <span class="attr">name:</span> <span class="string">add</span> <span class="string">content</span> <span class="string">to</span> <span class="string">~/.ssh/config</span></span><br><span class="line">      <span class="attr">blockinfile:</span></span><br><span class="line">        <span class="attr">path:</span> <span class="string">~/.ssh/config</span></span><br><span class="line">        <span class="attr">backup:</span> <span class="literal">yes</span></span><br><span class="line">        <span class="attr">create:</span> <span class="literal">yes</span></span><br><span class="line">        <span class="attr">block:</span> <span class="string">|</span></span><br><span class="line"><span class="string">          Host &#123;&#123;jump_server&#125;&#125;</span></span><br><span class="line"><span class="string">            User &#123;&#123;hostvars[jump_server][&#x27;ansible_ssh_user&#x27;]&#125;&#125;</span></span><br><span class="line"><span class="string">            HostName &#123;&#123;hostvars[jump_server][&#x27;ansible_ssh_host&#x27;]&#125;&#125;</span></span><br><span class="line"><span class="string">            Port &#123;&#123;hostvars[jump_server][&#x27;ansible_ssh_port&#x27;]&#125;&#125;</span></span><br><span class="line"><span class="string">            StrictHostKeyChecking   no</span></span><br><span class="line"><span class="string">            LogLevel                ERROR</span></span><br><span class="line"><span class="string">            UserKnownHostsFile      /dev/null</span></span><br><span class="line"><span class="string"></span>    <span class="bullet">-</span> <span class="attr">name:</span> <span class="string">create</span> <span class="string">autossh</span> <span class="string">service</span></span><br><span class="line">      <span class="attr">become:</span> <span class="literal">yes</span></span><br><span class="line">      <span class="attr">shell:</span> <span class="string">|</span></span><br><span class="line"><span class="string">        cat &gt;/tmp/autossh.service &lt;&lt;EOF</span></span><br><span class="line"><span class="string">        [Unit]</span></span><br><span class="line"><span class="string">        Description=AutoSSH service for a reverse tunnel from some.example.com to localhost</span></span><br><span class="line"><span class="string">        After=network-online.target</span></span><br><span class="line"><span class="string"></span></span><br><span class="line">        [<span class="string">Service</span>]</span><br><span class="line">        <span class="string">User=&#123;&#123;hostvars[hostname][&#x27;ansible_ssh_user&#x27;]&#125;&#125;</span></span><br><span class="line">        <span class="string">Group=adm</span></span><br><span class="line">        <span class="string">Environment=&quot;AUTOSSH_GATETIME=0&quot;</span></span><br><span class="line">        <span class="string">ExecStart=/usr/bin/autossh</span> <span class="string">-M</span> <span class="number">22001</span> <span class="string">-N</span> <span class="string">-T</span> <span class="string">-q</span> <span class="string">-o</span> <span class="string">ServerAliveInterval=30</span> <span class="string">-o</span> <span class="string">ServerAliveCountMax=10</span> <span class="string">-R</span> &#123;&#123;<span class="string">hostvars</span>[<span class="string">hostname</span>][<span class="string">&#x27;jump_server_port&#x27;</span>]&#125;&#125;<span class="string">:localhost:22</span> &#123;&#123;<span class="string">jump_server</span>&#125;&#125;</span><br><span class="line">        <span class="string">Restart=always</span></span><br><span class="line">        <span class="string">RestartSec=60</span></span><br><span class="line"></span><br><span class="line">        [<span class="string">Install</span>]</span><br><span class="line">        <span class="string">WantedBy=multi-user.target</span></span><br><span class="line">        <span class="string">EOF</span></span><br><span class="line"></span><br><span class="line">        <span class="string">cp</span> <span class="string">/tmp/autossh.service</span> <span class="string">/etc/systemd/system</span></span><br><span class="line">        <span class="string">systemctl</span> <span class="string">enable</span> <span class="string">autossh.service</span></span><br><span class="line">        <span class="string">systemctl</span> <span class="string">start</span> <span class="string">autossh.service</span></span><br></pre></td></tr></table></figure>
+
+<p>执行：</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">ansible-playbook autossh.yml -vvvv \</span><br><span class="line">         --extra-vars <span class="string">&quot;hostname=zhangsan \</span></span><br><span class="line"><span class="string">                       jump_server=j01&quot;</span></span><br></pre></td></tr></table></figure>
+
+      
+    </div>
+    <footer class="article-footer">
+      <a data-url="https://marshal.ohtly.com/2022/06/21/rpi-zero-system-basic-settings-and-autossh/" data-id="cl4nhmvoc00003n4y9ww08blj" data-title="树莓派 zero 系统配置和 autossh 安装配置" class="article-share-link">分享</a>
+      
+      
+      
+  <ul class="article-tag-list" itemprop="keywords"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/ansible/" rel="tag">ansible</a></li><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/autossh/" rel="tag">autossh</a></li><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/raspberrypi/" rel="tag">raspberrypi</a></li><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/rpi-zero/" rel="tag">rpi zero</a></li></ul>
+
+    </footer>
+  </div>
+  
+    
+<nav id="article-nav">
+  
+  
+    <a href="/2022/06/16/rpi-zero-headless-setup-ssh/" id="article-nav-older" class="article-nav-link-wrap">
+      <strong class="article-nav-caption">后一篇</strong>
+      <div class="article-nav-title">树莓派 zero headless 安装 Raspberry Pi OS Lite 设置 ssh</div>
+    </a>
+  
+</nav>
+
+  
+</article>
+
+
+</section>
+        
+          <aside id="sidebar">
+  
+    
+  <div class="widget-wrap">
+    <h3 class="widget-title">分类</h3>
+    <div class="widget">
+      <ul class="category-list"><li class="category-list-item"><a class="category-list-link" href="/categories/it-%E6%8A%80%E6%9C%AF/">it 技术</a></li></ul>
+    </div>
+  </div>
+
+
+  
+    
+  <div class="widget-wrap">
+    <h3 class="widget-title">标签</h3>
+    <div class="widget">
+      <ul class="tag-list" itemprop="keywords"><li class="tag-list-item"><a class="tag-list-link" href="/tags/ansible/" rel="tag">ansible</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/autossh/" rel="tag">autossh</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/docker/" rel="tag">docker</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/fastify/" rel="tag">fastify</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/github/" rel="tag">github</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/hexo/" rel="tag">hexo</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/koa/" rel="tag">koa</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/lcdp/" rel="tag">lcdp</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/lerna/" rel="tag">lerna</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/monorepo/" rel="tag">monorepo</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/node-js/" rel="tag">node.js</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/npm/" rel="tag">npm</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/p2022a/" rel="tag">p2022a</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/pve/" rel="tag">pve</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/raspberrypi/" rel="tag">raspberrypi</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/rpi-zero/" rel="tag">rpi zero</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/typescript/" rel="tag">typescript</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/%E8%99%9A%E6%8B%9F%E5%8C%96/" rel="tag">虚拟化</a></li></ul>
+    </div>
+  </div>
+
+
+  
+    
+  <div class="widget-wrap">
+    <h3 class="widget-title">标签云</h3>
+    <div class="widget tagcloud">
+      <a href="/tags/ansible/" style="font-size: 10px;">ansible</a> <a href="/tags/autossh/" style="font-size: 10px;">autossh</a> <a href="/tags/docker/" style="font-size: 12.5px;">docker</a> <a href="/tags/fastify/" style="font-size: 10px;">fastify</a> <a href="/tags/github/" style="font-size: 10px;">github</a> <a href="/tags/hexo/" style="font-size: 12.5px;">hexo</a> <a href="/tags/koa/" style="font-size: 10px;">koa</a> <a href="/tags/lcdp/" style="font-size: 10px;">lcdp</a> <a href="/tags/lerna/" style="font-size: 12.5px;">lerna</a> <a href="/tags/monorepo/" style="font-size: 12.5px;">monorepo</a> <a href="/tags/node-js/" style="font-size: 17.5px;">node.js</a> <a href="/tags/npm/" style="font-size: 12.5px;">npm</a> <a href="/tags/p2022a/" style="font-size: 20px;">p2022a</a> <a href="/tags/pve/" style="font-size: 10px;">pve</a> <a href="/tags/raspberrypi/" style="font-size: 12.5px;">raspberrypi</a> <a href="/tags/rpi-zero/" style="font-size: 12.5px;">rpi zero</a> <a href="/tags/typescript/" style="font-size: 15px;">typescript</a> <a href="/tags/%E8%99%9A%E6%8B%9F%E5%8C%96/" style="font-size: 12.5px;">虚拟化</a>
+    </div>
+  </div>
+
+  
+    
+  <div class="widget-wrap">
+    <h3 class="widget-title">归档</h3>
+    <div class="widget">
+      <ul class="archive-list"><li class="archive-list-item"><a class="archive-list-link" href="/archives/2022/06/">六月 2022</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2022/03/">三月 2022</a></li></ul>
+    </div>
+  </div>
+
+
+  
+    
+  <div class="widget-wrap">
+    <h3 class="widget-title">最新文章</h3>
+    <div class="widget">
+      <ul>
+        
+          <li>
+            <a href="/2022/06/21/rpi-zero-system-basic-settings-and-autossh/">树莓派 zero 系统配置和 autossh 安装配置</a>
+          </li>
+        
+          <li>
+            <a href="/2022/06/16/rpi-zero-headless-setup-ssh/">树莓派 zero headless 安装 Raspberry Pi OS Lite 设置 ssh</a>
+          </li>
+        
+          <li>
+            <a href="/2022/03/12/monorepo-add-dockerfile-support/">为 Lerna monorepo 项目编写 Dockerfile</a>
+          </li>
+        
+          <li>
+            <a href="/2022/03/08/monorepo-use-lerna/">使用 Lerna 创建单一仓库的 TypeScript 多包项目</a>
+          </li>
+        
+          <li>
+            <a href="/2022/03/08/typescript-build-publish-npm-package/">Typescript 构建并发布 npm 包</a>
+          </li>
+        
+      </ul>
+    </div>
+  </div>
+
+  
+</aside>
+        
+      </div>
+      <footer id="footer">
+  
+  <div class="outer">
+    <div id="footer-info" class="inner">
+      
+      &copy; 2022 Marshal Wu<br>
+      Powered by <a href="https://hexo.io/" target="_blank">Hexo</a>
+    </div>
+  </div>
+</footer>
+
+    </div>
+    <nav id="mobile-nav">
+  
+    <a href="/" class="mobile-nav-link">Home</a>
+  
+    <a href="/archives" class="mobile-nav-link">Archives</a>
+  
+</nav>
+    
+
+
+<script src="/js/jquery-3.4.1.min.js"></script>
+
+
+
+  
+<script src="/fancybox/jquery.fancybox.min.js"></script>
+
+
+
+
+<script src="/js/script.js"></script>
+
+
+
+
+
+  </div>
+</body>
+</html>
